@@ -115,7 +115,7 @@ class FollowerInference:
             os.environ['MKL_NUM_THREADS'] = str(1)
             device = torch.device('cpu')
             torch.set_num_threads(1)
-            torch.set_num_interop_threads(1)
+            # torch.set_num_interop_threads(1)
             log.warning('CUDA is not available, using CPU. This might be slow.')
 
         actor_critic.model_to_device(device)

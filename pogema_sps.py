@@ -70,6 +70,7 @@ for num_agents in reversed([64, 128, 256, 512, 1024, 2048]):
         # algo_cfg = PIBTInferenceConfig(device='cpu', num_process=8, centralized=True)
         # algo = PIBTInference(algo_cfg)
         metrics = run_episode(env, algo)
+        print(metrics)
         # env.render()
         results.append({"num_agents": num_agents, "metrics": metrics})
 with open('sps-results.json', 'w') as f:

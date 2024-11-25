@@ -1,3 +1,4 @@
+import json
 import time
 
 import yaml
@@ -49,16 +50,18 @@ class RuntimeMetricWrapper(Wrapper):
         self._current_step = 0
         return obs
 
+
 results = []
-for num_agents in reversed([128, 256, 512, 1024, 2048, 4096, 8192]):
-    for map_name in maps:
+for num_agents in reversed([64, 128, 256, 512, 1024, 2048]):
+    # for map_name in maps:
+    for _ in range(3):
+        map_name = "large-validation-mazes-seed-9"
         grid = maps[map_name]
-        map_name = "pico_s25_od30_na32"
         follower_cfg = FollowerInferenceConfig()
         algo = FollowerInference(follower_cfg)
-
+        algo.reset_states()
         env = pogema_v0(
-            GridConfig(map=grid, max_episode_steps=256, map_name=map_name, num_agents=num_agents, on_target='restart',
+            GridConfig(map=grid, max_episode_steps=1024, map_name=map_name, num_agents=num_agents, on_target='restart',
                        observation_type='MAPF'))
         env = RuntimeMetricWrapper(env)
         env = ProvideGlobalObstacles(env)
@@ -66,6 +69,8 @@ for num_agents in reversed([128, 256, 512, 1024, 2048, 4096, 8192]):
         env.reset()
         # algo_cfg = PIBTInferenceConfig(device='cpu', num_process=8, centralized=True)
         # algo = PIBTInference(algo_cfg)
-        print(run_episode(env, algo))
-        env.render()
-        exit(0)
+        metrics = run_episode(env, algo)
+        # env.render()
+        results.append({"num_agents": num_agents, "metrics": metrics})
+with open('sps-results.json', 'w') as f:
+    json.dump(results, f)
